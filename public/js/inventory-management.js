@@ -17,13 +17,19 @@ $(document).ready(function () {
     } else {
       resetTable();
       $('#updateItem').hide();
+      let dashboard = tableau.extensions.dashboardContent.dashboard;
+      const visibilityMap = {7: tableau.ZoneVisibilityType.Hide};
+      dashboard.setZoneVisibilityAsync(visibilityMap);
     }
   }
 
   tableau.extensions.initializeAsync().then(function () {
     // Initialization succeeded! Get the dashboard's name & log to console
-    let dashboard;
-    dashboard = tableau.extensions.dashboardContent.dashboard;
+    let dashboard = tableau.extensions.dashboardContent.dashboard;
+
+    // Hard coding for the inv mgmt dashboard that the Extension is the index 7 zone
+    const visibilityMap = {7: tableau.ZoneVisibilityType.Hide};
+    dashboard.setZoneVisibilityAsync(visibilityMap);
 
     for (const ws of dashboard.worksheets) {
       if (ws.name === wsName) {
@@ -44,7 +50,7 @@ $(document).ready(function () {
   function resetTable () {
     $('#data_table tr').remove();
     var headerRow = $('<tr/>');
-    headerRow.append('<th>Select a project to update</th>');
+    headerRow.append('<th>Select a product to update</th>');
 
     $('#data_table').append(headerRow);
   }
@@ -88,6 +94,9 @@ $(document).ready(function () {
       dataRow.append('<td><input type="text" size="8" id="row_' + rowID + '_ordered" value="' + item[orderedIndex].formattedValue + '" /></td>');
       $('#data_table').append(dataRow);
     });
+    let dashboard = tableau.extensions.dashboardContent.dashboard;
+    const visibilityMap = {7: tableau.ZoneVisibilityType.Show};
+    dashboard.setZoneVisibilityAsync(visibilityMap);
   }
 
   $('form').submit(function (event) {
@@ -111,6 +120,9 @@ $(document).ready(function () {
         dataSources[0].refreshAsync();
       })
     );
+    let dashboard = tableau.extensions.dashboardContent.dashboard;
+    const visibilityMap = {7: tableau.ZoneVisibilityType.Hide};
+    dashboard.setZoneVisibilityAsync(visibilityMap);
 
     // event.preventDefault();
   });
