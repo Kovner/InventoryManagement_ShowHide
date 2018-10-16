@@ -1,4 +1,10 @@
 $(document).ready(function () {
+  //Render tableau-ui React components
+  ReactDOM.render(
+    React.createElement(TableauUI.Button, {buttonType: 'filledGreen'}, "Update"), 
+    document.getElementById('updateItem')
+  );
+
   let worksheet;
   const wsName = 'Inventory';    // This is the sheet we'll use for updating task info
 
@@ -57,11 +63,6 @@ $(document).ready(function () {
 
   function populateTable (dt) {
     $('#data_table tr').remove();
-    var headerRow = $('<tr/>');
-    headerRow.append('<th>Product</th>');
-    headerRow.append('<th>Stock</th>');
-    headerRow.append('<th>Ordered</th>');
-    $('#data_table').append(headerRow);
 
     let productIndex, stockIndex, orderedIndex, rowIDIndex;
 
@@ -89,41 +90,67 @@ $(document).ready(function () {
     dt.data.forEach(function (item) {
       const rowID = item[rowIDIndex].formattedValue;
       let dataRow = $('<tr/>');
-      dataRow.append('<td>' + item[productIndex].formattedValue + '</td>');
-      dataRow.append('<td><input type="text" size="8" id="row_' + rowID + '_stock" value="' + item[stockIndex].formattedValue + '" /></td>');
-      dataRow.append('<td><input type="text" size="8" id="row_' + rowID + '_ordered" value="' + item[orderedIndex].formattedValue + '" /></td>');
+      dataRow.append('<td><div class="productName">' + item[productIndex].formattedValue + '</div></td>');
+      dataRow.append('<td><div class="inputContainer" id="row_' + rowID + '_stock"/></td>');
+      dataRow.append('<td><div class="inputContainer" id="row_' + rowID + '_ordered"/></td>');
       $('#data_table').append(dataRow);
+
+      //Render the React Text Inputs
+      const stockProps = {
+        label: 'Stock',
+        style: { width: 140 },
+        styleType: 'outline',
+        defaultValue: item[stockIndex].formattedValue,
+      };
+      ReactDOM.render(
+        React.createElement(TableauUI.TextField, stockProps),
+        document.getElementById('row_' + rowID + '_stock')
+      )
+      const orderedProps = {
+        label: 'Ordered',
+        style: { width: 140 },
+        styleType: 'outline',
+        defaultValue: item[orderedIndex].formattedValue,
+      };
+      ReactDOM.render(
+        React.createElement(TableauUI.TextField, orderedProps),
+        document.getElementById('row_' + rowID + '_ordered')
+      )
     });
     let dashboard = tableau.extensions.dashboardContent.dashboard;
     const visibilityMap = {7: tableau.ZoneVisibilityType.Show};
     dashboard.setZoneVisibilityAsync(visibilityMap);
   }
-
-  $('form').submit(function (event) {
-    event.preventDefault();
-    let formInputs = $('form#projectTasks :input[type="text"]');
-    let postData = [];
-
-    formInputs.each(function () {
-      let c = $(this);
-      postData.push({id: c[0].id, 'value': c[0].value});
-    });
-
-    // Post it
-    $.ajax({
-      type: 'POST',
-      url: 'http://localhost:8765',
-      data: JSON.stringify(postData),
-      contentType: 'application/json'
-    }).done(
-      worksheet.getDataSourcesAsync().then(function (dataSources) {
-        dataSources[0].refreshAsync();
-      })
-    );
-    let dashboard = tableau.extensions.dashboardContent.dashboard;
-    const visibilityMap = {7: tableau.ZoneVisibilityType.Hide};
-    dashboard.setZoneVisibilityAsync(visibilityMap);
-
-    // event.preventDefault();
-  });
 });
+
+
+function submitData() {
+  let postData = [];
+
+  let $inputArray = $('.inputContainer');
+  for(let inputDiv of $inputArray) {
+    let inputData = {};
+    inputData['id'] = inputDiv.id;
+    let inputText = $(inputDiv).find('input')[0];
+    inputData['value'] = inputText.value;
+    postData.push(inputData);
+  };
+
+  let dashboard = tableau.extensions.dashboardContent.dashboard;
+  let worksheet = dashboard.worksheets.find( ws => ws.name === "Inventory");
+
+  // Post it
+  $.ajax({
+    type: 'POST',
+    url: 'http://localhost:8765',
+    data: JSON.stringify(postData),
+    contentType: 'application/json'
+  }).done(
+    worksheet.getDataSourcesAsync().then(function (dataSources) {
+      dataSources[0].refreshAsync();
+    })
+  );
+  const visibilityMap = {7: tableau.ZoneVisibilityType.Hide};
+  dashboard.setZoneVisibilityAsync(visibilityMap);
+
+}

@@ -1,0 +1,19 @@
+body, input, button {
+    font-family: 'Benton Sans', Arial, Helvetica, sans-serif;
+}
+
+#updateItem {
+    float: right;
+}
+
+#data_table {
+    border: none;
+}
+
+h4 {
+    font-size: 24px;
+}
+
+.productName {
+    padding-top: 23px;
+}
