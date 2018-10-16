@@ -63,11 +63,6 @@ $(document).ready(function () {
 
   function populateTable (dt) {
     $('#data_table tr').remove();
-    // var headerRow = $('<tr/>');
-    // headerRow.append('<th>Product</th>');
-    // headerRow.append('<th>Stock</th>');
-    // headerRow.append('<th>Ordered</th>');
-    // $('#data_table').append(headerRow);
 
     let productIndex, stockIndex, orderedIndex, rowIDIndex;
 
@@ -96,16 +91,12 @@ $(document).ready(function () {
       const rowID = item[rowIDIndex].formattedValue;
       let dataRow = $('<tr/>');
       dataRow.append('<td>' + item[productIndex].formattedValue + '</td>');
-      // dataRow.append('<td><input type="text" size="8" id="row_' + rowID + '_stock" value="' + item[stockIndex].formattedValue + '" /></td>');
-      // dataRow.append('<td><input type="text" size="8" id="row_' + rowID + '_ordered" value="' + item[orderedIndex].formattedValue + '" /></td>');
       dataRow.append('<td><div class="inputContainer" id="row_' + rowID + '_stock"/></td>');
       dataRow.append('<td><div class="inputContainer" id="row_' + rowID + '_ordered"/></td>');
       $('#data_table').append(dataRow);
 
       //Render the React Text Inputs
       const stockProps = {
-        // onChange: e => this.setState({value: e.target.value, error: e.target.value === 'error' && 'Lorem'}),
-        // onClear: () => this.setState({value: ''}),
         label: 'Stock',
         style: { width: 140 },
         styleType: 'line',
@@ -116,8 +107,6 @@ $(document).ready(function () {
         document.getElementById('row_' + rowID + '_stock')
       )
       const orderedProps = {
-        // onChange: e => this.setState({value: e.target.value, error: e.target.value === 'error' && 'Lorem'}),
-        // onClear: () => this.setState({value: ''}),
         label: 'Ordered',
         style: { width: 140 },
         styleType: 'line',
@@ -132,49 +121,13 @@ $(document).ready(function () {
     const visibilityMap = {7: tableau.ZoneVisibilityType.Show};
     dashboard.setZoneVisibilityAsync(visibilityMap);
   }
-
-  $('form').submit(function (event) {
-    event.preventDefault();
-    let formInputs = $('form#projectTasks :input[type="text"]');
-    let postData = [];
-
-    formInputs.each(function () {
-      let c = $(this);
-      postData.push({id: c[0].id, 'value': c[0].value});
-    });
-
-    // Post it
-    $.ajax({
-      type: 'POST',
-      url: 'http://localhost:8765',
-      data: JSON.stringify(postData),
-      contentType: 'application/json'
-    }).done(
-      worksheet.getDataSourcesAsync().then(function (dataSources) {
-        dataSources[0].refreshAsync();
-      })
-    );
-    let dashboard = tableau.extensions.dashboardContent.dashboard;
-    const visibilityMap = {7: tableau.ZoneVisibilityType.Hide};
-    dashboard.setZoneVisibilityAsync(visibilityMap);
-
-    // event.preventDefault();
-  });
 });
 
 
 function submitData() {
-  // let formInputs = $('form#projectTasks :input[type="text"]');
-  // let postData = [];
-
-  // formInputs.each(function () {
-  //   let c = $(this);
-  //   postData.push({id: c[0].id, 'value': c[0].value});
-  // });
   let postData = [];
 
   let $inputArray = $('.inputContainer');
-  // $inputArray.each(function(inputDiv) {
   for(let inputDiv of $inputArray) {
     let inputData = {};
     inputData['id'] = inputDiv.id;
