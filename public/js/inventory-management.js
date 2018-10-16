@@ -90,7 +90,7 @@ $(document).ready(function () {
     dt.data.forEach(function (item) {
       const rowID = item[rowIDIndex].formattedValue;
       let dataRow = $('<tr/>');
-      dataRow.append('<td>' + item[productIndex].formattedValue + '</td>');
+      dataRow.append('<td><div class="productName">' + item[productIndex].formattedValue + '</div></td>');
       dataRow.append('<td><div class="inputContainer" id="row_' + rowID + '_stock"/></td>');
       dataRow.append('<td><div class="inputContainer" id="row_' + rowID + '_ordered"/></td>');
       $('#data_table').append(dataRow);
@@ -99,7 +99,7 @@ $(document).ready(function () {
       const stockProps = {
         label: 'Stock',
         style: { width: 140 },
-        styleType: 'line',
+        styleType: 'outline',
         defaultValue: item[stockIndex].formattedValue,
       };
       ReactDOM.render(
@@ -109,7 +109,7 @@ $(document).ready(function () {
       const orderedProps = {
         label: 'Ordered',
         style: { width: 140 },
-        styleType: 'line',
+        styleType: 'outline',
         defaultValue: item[orderedIndex].formattedValue,
       };
       ReactDOM.render(
